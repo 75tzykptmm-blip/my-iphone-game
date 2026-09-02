@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Square Game">
+  <title>My iPhone Game</title>
+  <style>
+    html, body {
+      touch-action: none;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      background: #222;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 10px;
+    }
+    canvas {
+      background: #111;
+      border: 2px solid #555;
+      max-width: 90vw;
+      max-height: 45vh;
+      display: block;
+      margin: 10px auto;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 65px);
+      grid-template-rows: repeat(3, 65px);
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .btn {
+      background: #444;
+      color: white;
+      font-size: 26px;
+      border: none;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    .btn:active {
+      background: #00FF66;
+      color: black;
+    }
+    #up { grid-column: 2; grid-row: 1; }
+    #left { grid-column: 1; grid-row: 2; }
+    #right { grid-column: 3; grid-row: 2; }
+    #down { grid-column: 2; grid-row: 3; }
+  </style>
+</head>
+<body>
+  <h3>iPhone Web App</h3>
+  <canvas id="gameCanvas" width="300" height="300"></canvas>
+
+  <div class="controls">
+    <button class="btn" id="up">▲</button>
+    <button class="btn" id="left">◀</button>
+    <button class="btn" id="right">▶</button>
+    <button class="btn" id="down">▼</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let player = { x: 130, y: 130, size: 40, speed: 4 };
+    let move = { up: false, down: false, left: false, right: false };
+
+    function bindTouch(id, dir) {
+      const btn = document.getElementById(id);
+      btn.addEventListener("touchstart", (e) => { e.preventDefault(); move[dir] = true; });
+      btn.addEventListener("touchend", (e) => { e.preventDefault(); move[dir] = false; });
+      btn.addEventListener("mousedown", (e) => { e.preventDefault(); move[dir] = true; });
+      btn.addEventListener("mouseup", (e) => { e.preventDefault(); move[dir] = false; });
+    }
+
+    bindTouch("up", "up");
+    bindTouch("down", "down");
+    bindTouch("left", "left");
+    bindTouch("right", "right");
+
+    function update() {
+      if (move.up && player.y > 0) player.y -= player.speed;
+      if (move.down && player.y < canvas.height - player.size) player.y += player.speed;
+      if (move.left && player.x > 0) player.x -= player.speed;
+      if (move.right && player.x < canvas.width - player.size) player.x += player.speed;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#00FF66";
+      ctx.fillRect(player.x, player.y, player.size, player.size);
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
